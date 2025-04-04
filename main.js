@@ -23,8 +23,8 @@ function renderTask() {
             <span class="task-title">${task.title}</span>
             <div class="task-action">
                 <button class="task-btn edit" onclick="edit(${task.id})">Edit</button>
-                <button class="task-btn done">${task.completed ? "Completed" : "Done"} </button>
-                <button class="task-btn delete">Delete</button>
+                <button class="task-btn done" onclick="done(${task.id})">${task.completed ? "Completed" : "Done"} </button>
+                <button class="task-btn delete" onclick="deleted(${task.id})">Delete</button>
             </div>
         </li>`
     })
@@ -78,7 +78,26 @@ function edit(id) {
             isValidTask(taskEdited)
             task.title = taskEdit
         }
-
     })
     renderTask()
+}
+
+//5. đánh dấu task đã hoàn thành
+function done(id) {
+    tasks.forEach(task => {
+        if(task.id === id) {
+            task.completed = !task.completed
+        }
+    })
+    renderTask()
+}
+
+//6. xóa task
+function deleted(id) {
+    const task = tasks.find(task => task.id === id)
+    const confirmDelete = confirm(`Are you sure you want to delete ${task.title}?`)
+    if(confirmDelete) {
+        tasks.splice(tasks.indexOf(task), 1)
+        renderTask()
+    }
 }
