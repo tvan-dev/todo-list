@@ -1,4 +1,3 @@
-
 const $ = document.querySelector.bind(document)
 const $$ = document.querySelectorAll.bind(document)
 
@@ -16,14 +15,14 @@ const taskItem = $(".task-item")
 
 //1. render tasks list
 function renderTask() {
-    const htmls = tasks.map(task => {
+    const htmls = tasks.map((task, index) => {
         return `
-        <li class="task-item ${task.completed ? 'completed' : ''}">
+        <li class="task-item ${task.completed ? 'completed' : ''}" task-index="${index}">
             <span class="task-title">${task.title}</span>
             <div class="task-action">
-                <button class="task-btn edit" onclick="edit(${task.id})">Edit</button>
-                <button class="task-btn done" onclick="done(${task.id})">${task.completed ? "Completed" : "Done"} </button>
-                <button class="task-btn delete" onclick="deleted(${task.id})">Delete</button>
+                <button class="task-btn edit">Edit</button>
+                <button class="task-btn done">${task.completed ? "Completed" : "Done"} </button>
+                <button class="task-btn delete">Delete</button>
             </div>
         </li>`
     })
@@ -56,7 +55,6 @@ function addTask(e) {
     const taskName = input.value.trim()
 
     if(isValidTask(taskName)) {
-        console.log("hello");
         tasks.push({
             id: tasks.length + 1,
             title: taskName,
@@ -68,38 +66,31 @@ function addTask(e) {
     
 }
 
-//4. chỉnh sửa task
-function edit(id) {
-    tasks.forEach(task => {
-        if(task.id === id) {
-            const taskEdited = prompt("Edit your task", task.title)
-            isValidTask(taskEdited)
-            task.title = taskEdit
+//4. handle  task action: edit, done, delete
+function handleTaskActions(e) {
+    //thêm attribute task-index vào task-item để lấy index của task trong mảng tasks- xem ở renderTask()
+    const taskitem = e.target.closest(".task-item")
+    const index = +taskitem.getAttribute("task-index")
+    const task = tasks[index]
+    if(e.target.closest(".edit")) {
+        const titleEdit = prompt("Edit your task",task.title)
+        if(isValidTask(titleEdit)) {
+            task.title = titleEdit
+            renderTask()
         }
-    })
-    renderTask()
-}
-
-//5. đánh dấu task đã hoàn thành
-function done(id) {
-    tasks.forEach(task => {
-        if(task.id === id) {
-            task.completed = !task.completed
-        }
-    })
-    renderTask()
-}
-
-//6. xóa task
-function deleted(id) {
-    const task = tasks.find(task => task.id === id)
-    const confirmDelete = confirm(`Are you sure you want to delete ${task.title}?`)
-    if(confirmDelete) {
-        tasks.splice(tasks.indexOf(task), 1)
+    } else if(e.target.closest(".done")) {
+        task.completed = !task.completed
         renderTask()
+    } else if(e.target.closest(".delete")) {
+        let confirmDelete = confirm(`Are you sure you want to delete "${task.title}"?`)
+        if(confirmDelete) {
+            tasks.splice(index,1)
+            renderTask()
+        }
     }
 }
 
 
 renderTask()
 form.addEventListener("submit", addTask)
+taskList.addEventListener("click", handleTaskActions)
