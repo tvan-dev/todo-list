@@ -15,6 +15,10 @@ const taskItem = $(".task-item")
 
 //1. render tasks list
 function renderTask() {
+    if(!tasks.length) {
+        taskList.innerHTML = `<li class="empty-message">No tasks available</li>` 
+        return;
+    }
     const htmls = tasks.map((task, index) => {
         return `
         <li class="task-item ${task.completed ? 'completed' : ''}" task-index="${index}">

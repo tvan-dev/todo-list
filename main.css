@@ -114,3 +114,8 @@ input {
     cursor: pointer;
     text-decoration: underline;
 }
+.empty-message {
+    list-style: none;
+    text-align: center;
+    color: #ccc
+}
