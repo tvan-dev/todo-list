@@ -2,7 +2,7 @@
 const $ = document.querySelector.bind(document)
 const $$ = document.querySelectorAll.bind(document)
 
-const tasks = []
+const tasks = JSON.parse(localStorage.getItem("tasks")) ?? []
 const form = $(".todo-form")
 const input = $("#todo-input")
 const submitBtn = $(".submit-btn")
@@ -14,7 +14,11 @@ const taskItem = $(".task-item")
 //     e.preventDefault()
 // }
 
-//1. render tasks list
+//1. lưu trữ task vào localStorage
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+}
+//1.1 render tasks list
 function renderTask() {
     if(!tasks.length) {
         taskList.innerHTML = `<li class="empty-message">No tasks available</li>` 
@@ -68,20 +72,22 @@ function addTask(e) {
         })
         input.value = ""
         renderTask()
+        saveTasks()
     }
     
 }
 
 //4. chỉnh sửa task
 function edit(id) {
-    tasks.forEach(task => {
+    tasks.forEach((task) => {
         if(task.id === id) {
             const taskEdited = prompt("Edit your task", task.title)
             isValidTask(taskEdited)
-            task.title = taskEdit
+            task.title = taskEdited
         }
     })
     renderTask()
+    saveTasks()
 }
 
 //5. đánh dấu task đã hoàn thành
@@ -92,6 +98,7 @@ function done(id) {
         }
     })
     renderTask()
+    saveTasks()
 }
 
 //6. xóa task
@@ -101,6 +108,7 @@ function deleted(id) {
     if(confirmDelete) {
         tasks.splice(tasks.indexOf(task), 1)
         renderTask()
+        saveTasks()
     }
 }
 

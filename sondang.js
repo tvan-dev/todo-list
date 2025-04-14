@@ -1,7 +1,7 @@
 const $ = document.querySelector.bind(document)
 const $$ = document.querySelectorAll.bind(document)
 
-const tasks = []
+const tasks = JSON.parse(localStorage.getItem("tasks")) ?? []
 const form = $(".todo-form")
 const input = $("#todo-input")
 const submitBtn = $(".submit-btn")
@@ -13,7 +13,13 @@ const taskItem = $(".task-item")
 //     e.preventDefault()
 // }
 
-//1. render tasks list
+
+//1. lưu trữ task vào localStorage
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks))
+}
+
+//1.1 render tasks list
 function renderTask() {
     if(!tasks.length) {
         taskList.innerHTML = `<li class="empty-message">No tasks available</li>` 
@@ -21,7 +27,7 @@ function renderTask() {
     }
     const htmls = tasks.map((task, index) => {
         return `
-        <li class="task-item ${task.completed ? 'completed' : ''}" task-index="${index}">
+        <li class="task-item ${task.completed ? 'completed' : ''}" data-index="${index}">
             <span class="task-title">${task.title}</span>
             <div class="task-action">
                 <button class="task-btn edit">Edit</button>
@@ -66,6 +72,7 @@ function addTask(e) {
         })
         input.value = ""
         renderTask()
+        saveTasks()
     }
     
 }
@@ -74,22 +81,33 @@ function addTask(e) {
 function handleTaskActions(e) {
     //thêm attribute task-index vào task-item để lấy index của task trong mảng tasks- xem ở renderTask()
     const taskitem = e.target.closest(".task-item")
-    const index = +taskitem.getAttribute("task-index")
+
+    const index = +taskitem.dataset.index
     const task = tasks[index]
+
     if(e.target.closest(".edit")) {
         const titleEdit = prompt("Edit your task",task.title)
         if(isValidTask(titleEdit)) {
             task.title = titleEdit
             renderTask()
+            saveTasks()
         }
-    } else if(e.target.closest(".done")) {
+        return
+    } 
+
+    if(e.target.closest(".done")) {
         task.completed = !task.completed
         renderTask()
-    } else if(e.target.closest(".delete")) {
+        saveTasks()
+        return
+    } 
+
+    if(e.target.closest(".delete")) {
         let confirmDelete = confirm(`Are you sure you want to delete "${task.title}"?`)
         if(confirmDelete) {
             tasks.splice(index,1)
             renderTask()
+            saveTasks()
         }
     }
 }
