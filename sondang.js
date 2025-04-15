@@ -18,8 +18,14 @@ const taskItem = $(".task-item")
 function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks))
 }
+//1.1 tránh xxs
+function escapeHTMl(html) {
+    const div = document.createElement("div") 
+    div.innerText = html
+    return div.innerHTML
+}
 
-//1.1 render tasks list
+//1.2 render tasks list
 function renderTask() {
     if(!tasks.length) {
         taskList.innerHTML = `<li class="empty-message">No tasks available</li>` 
@@ -28,7 +34,7 @@ function renderTask() {
     const htmls = tasks.map((task, index) => {
         return `
         <li class="task-item ${task.completed ? 'completed' : ''}" data-index="${index}">
-            <span class="task-title">${task.title}</span>
+            <span class="task-title">${escapeHTMl(task.title)}</span>
             <div class="task-action">
                 <button class="task-btn edit">Edit</button>
                 <button class="task-btn done">${task.completed ? "Completed" : "Done"} </button>
